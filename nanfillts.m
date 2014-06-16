@@ -50,10 +50,6 @@ end
 
 %% Engine
 
-% Pad with a row of NaNs at the beginning and end
-bread    = NaN(1,sz(2),'like',tspanel);
-sandwich = [bread; tspanel; bread];
-
 % Find starting ending positions of consecutive NaNs in price. The double padding ensures that consecutive
 % NaNs and the beginning and at the end also have a start/end pair
 bread = false(1,sz(2));
@@ -75,18 +71,21 @@ if notrail
 end
 
 % New row length with padding
-lrow        = sz(1)+2;
+lrow          = sz(1)+2;
 % Convert the ends of each NaN sequence to positions, taking into account the padding and diff effect
-endpos      = (cen-1)*lrow + ren+1;
+endpos        = (cen-1)*lrow + ren+1;
 % Place the lengths of NaN sequences + increment to next row
-row(endpos) = ren-rst+1;
-% Get row map to sandwich
-row         = cumsum(row);
+row(endpos)   = ren-rst+1;
+% Get row map to sandwich and reduce indexing by 1
+row           = cumsum(row)-1;
+% Restore rows pointing to 0 (previous slice of bread)
+row(row == 0) = 1;
+row           = row(2:end-1,:);
 
-% Convert row map to position in sandwich
-pos     = bsxfun(@plus,(0:sz(2)-1)*lrow,row);
+% Convert row map to position in tspanel
+pos     = bsxfun(@plus,(0:sz(2)-1)*sz(1),row);
 % Extract only the forward-filled-NaN price matrix (i.e. exclude padding)
-tspanel = sandwich(pos(2:end-1,:));
+tspanel = tspanel(pos);
 
 % Eventually convert back to row vector
 if isrowvector 

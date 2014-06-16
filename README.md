@@ -1,11 +1,7 @@
-Function help
-=============
-
-**nanfillts**
-
-  **nanfillts** Fill NaNs in the time series with the previous valid observation
- 
-    ```nanfillts(TSPANEL) TSPANEL should be a numeric matrix (or a vector) 
+##### Description
+Fill NaNs in the time series with the previous valid observation
+##### Syntax
+    nanfillts(TSPANEL) TSPANEL should be a numeric matrix (or a vector) 
                        where each series is a column with the oldest 
                        observations in the first row (element) and the 
                        most recent ones in the last row (element).
@@ -20,7 +16,7 @@ Function help
     NOTE: leading NaNs are left untouched.
  
  
-  Example:
+##### Examples:
  
     % Input data       % Simple call       % No trailing
                        nanfillts(ts)       nanfillts(ts,1)
@@ -32,7 +28,6 @@ Function help
         NaN  NaN             9    2            NaN  NaN
  
   
-See also
-interp1q
-```
+See also [interp1q](http://www.mathworks.co.uk/help/matlab/ref/interp1q.html)
+
    

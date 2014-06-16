@@ -16,12 +16,27 @@ function tspanel = nanfillts(tspanel, notrail)
 %
 %   NOTE: leading NaNs are left untouched.
 %
-% See also
+%
+% Example:
+%
+%   % Input data       % Simple call       % No trailing
+%                      nanfillts(ts)       nanfillts(ts,1)
+%    ts =              ans =               ans = 
+%        10  NaN            10  NaN             10  NaN
+%       NaN  NaN            10  NaN             10  NaN
+%       NaN    1            10    1             10    1
+%         9    2             9    2              9    2
+%       NaN  NaN             9    2            NaN  NaN
+%
+% Additional features:
+% - <a href="matlab: web('https://github.com/okomarov/nanfillts','-browser')">GITHUB/nanfillts page</a>
+%
+% See also: INTERP1Q
 
 % Author: Oleg Komarov (o.komarov11@imperial.ac.uk)
 % Tested on R2013a Win7 64bit
 % 13 Dec 2013 - Created
-% 16 Jun 2014 - Improved memory footprint and added NOTRAIL
+% 16 Jun 2014 - Improved memory footprint; added NOTRAIL; expanded help
 
 %% Checks
 narginchk(1,2)

@@ -1,11 +1,15 @@
-function tspanel = nanfillts(tspanel)
+function tspanel = nanfillts(tspanel, notrail)
 
-% NANFILLTS Fill consecutive NaNs in the time series with last available observation
+% NANFILLTS Fill NaNs in the time series with the previous valid observation
 %
 %   NANFILLTS(TSPANEL) TSPANEL should be a numeric matrix (or a vector) 
 %                      where each series is a column with the oldest 
 %                      observations in the first row (element) and the 
 %                      most recent ones in the last row (element).
+%
+%   NANFILLTS(..., NOTRAIL) To avoid extrapolation of the last value of a 
+%                           time series till the end of the panel, set 
+%                           NOTRAIL to true (1). By default is false (0).
 %
 %
 %   TSPANEL = NANFILLTS(...) Returns the same matrix with filled NaNs.
@@ -17,9 +21,10 @@ function tspanel = nanfillts(tspanel)
 % Author: Oleg Komarov (o.komarov11@imperial.ac.uk)
 % Tested on R2013a Win7 64bit
 % 13 Dec 2013 - Created
+% 16 Jun 2014 - Improved memory footprint and added NOTRAIL
 
 %% Checks
-narginchk(1,1)
+narginchk(1,2)
 
 % Terminate if not applicable
 if isempty(tspanel) || (isscalar(tspanel) && isnumeric(tspanel))
@@ -29,12 +34,18 @@ end
 % TSPANEL
 sz = size(tspanel);
 if ~isnumeric(tspanel) || numel(sz) > 2
-    error('prevprice:numTspanel','TSPANEL should be a numeric vector or matrix.')
+    error('nanfillts:numTspanel','TSPANEL should be a numeric vector or matrix.')
 end
 isrowvector = sz(1) == 1;
 if isrowvector 
     tspanel = tspanel';
     sz      = sz([2,1]); 
+end
+
+if nargin < 2 || isempty(notrail)
+    notrail = false;
+elseif ~isscalar(notrail) || ~(notrail == 1 || notrail == 0 || islogical(notrail))
+    error('nanfillts:invalidNotrail','NOTRAIL should be true (1) or false (0).')
 end
 
 %% Engine
@@ -56,6 +67,13 @@ sten  = diff(int8(inan));
 
 % Preallocate row subs mapping to sandwich and cast to smaller type
 [rst,ren,cen,row,sz] = cast2smaller(rst,ren,cen,~inan,sz);
+
+% Eventually don't trail last available value if time series ends earlier
+if notrail
+    idx      = ren > sz(1);
+    ren(idx) = rst(idx);
+end
+
 % New row length with padding
 lrow        = sz(1)+2;
 % Convert the ends of each NaN sequence to positions, taking into account the padding and diff effect

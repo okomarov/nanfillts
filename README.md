@@ -30,4 +30,5 @@ Fill NaNs in the time series with the previous valid observation
   
 See also [interp1q](http://www.mathworks.co.uk/help/matlab/ref/interp1q.html)
 
-   
+An example on a single series:
+![Before and after](https://raw.githubusercontent.com/okomarov/nanfillts/master/Example.png)
